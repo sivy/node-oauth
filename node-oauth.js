@@ -1,4 +1,4 @@
-include('../crypto/node-crypto.js');
+var crypto = require('../crypto/node-crypto.js');
 
 /*
  * Copyright 2008 Netflix, Inc.
@@ -477,8 +477,8 @@ OAuth.SignatureMethod.registerMethodClass(["PLAINTEXT", "PLAINTEXT-Accessor"],
 OAuth.SignatureMethod.registerMethodClass(["HMAC-SHA1", "HMAC-SHA1-Accessor"],
     OAuth.SignatureMethod.makeSubclass(
         function getSignature(baseString) {
-            Sha1.b64pad = '=';
-            var signature = sha1(this.key, baseString);
+            crypto.Sha1.b64pad = '=';
+            var signature = crypto.sha1(this.key, baseString);
             return signature;
         }
     ));
