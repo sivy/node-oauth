@@ -1,4 +1,4 @@
-var crypto = require('../crypto/node-crypto.js');
+var crypto = require('./crypto');
 
 /*
  * Copyright 2008 Netflix, Inc.
@@ -16,32 +16,6 @@ var crypto = require('../crypto/node-crypto.js');
  * limitations under the License.
  */
 
-
-/* An OAuth message is represented as an object like this:
-   {method: "GET", action: "http://server.com/path", parameters: ...}
-
-   The parameters may be either a map {name: value, name2: value2}
-   or an Array of name-value pairs [[name, value], [name2, value2]].
-   The latter representation is more powerful: it supports parameters
-   in a specific sequence, or several parameters with the same name;
-   for example [["a", 1], ["b", 2], ["a", 3]].
-
-   Parameter names and values are NOT percent-encoded in an object.
-   They must be encoded before transmission and decoded after reception.
-   For example, this message object:
-   {method: "GET", action: "http://server/path", parameters: {p: "x y"}}
-   ... can be transmitted as an HTTP request that begins:
-   GET /path?p=x%20y HTTP/1.0
-   (This isn't a valid OAuth request, since it lacks a signature etc.)
-   Note that the object "x y" is transmitted as x%20y.  To encode
-   parameters, you can call OAuth.addToURL, OAuth.formEncode or
-   OAuth.getAuthorization.
-
-   This message object model harmonizes with the browser object model for
-   input elements of an form, whose value property isn't percent encoded.
-   The browser encodes each value before transmitting it. For example,
-   see consumer.setInputs in example/consumer.js.
- */
 
 var OAuth; if (OAuth == null) OAuth = {};
 
@@ -477,8 +451,7 @@ OAuth.SignatureMethod.registerMethodClass(["PLAINTEXT", "PLAINTEXT-Accessor"],
 OAuth.SignatureMethod.registerMethodClass(["HMAC-SHA1", "HMAC-SHA1-Accessor"],
     OAuth.SignatureMethod.makeSubclass(
         function getSignature(baseString) {
-            crypto.Sha1.b64pad = '=';
-            var signature = crypto.sha1(this.key, baseString);
+	     var signature = (new crypto.Hmac).init("sha1",this.key).update(baseString).digest("base64");
             return signature;
         }
     ));
