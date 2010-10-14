@@ -2,3 +2,4 @@ requires node-crypto
 
 http://github.com/waveto/node-crypto
 
+    require('node-oath')
